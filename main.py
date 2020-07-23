@@ -212,7 +212,7 @@ def draw_instructions():
          "T and Y --> FOV",
          "M --> music",
          "N --> hit animation",
-         "ESC --> resume or exit"
+         "ESC --> pause or exit"
          ]
     for i in range(len(l)):
         s = l[i]
