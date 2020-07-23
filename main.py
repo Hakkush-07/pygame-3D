@@ -30,23 +30,23 @@ GRAY = (150, 150, 150)
 MING = (15, 108, 118)
 
 # Loading images and sounds
-bg_image = pygame.image.load("bg.png")
-cursor = pygame.image.load("cursor.png")
-sens = pygame.image.load("sensitivity.png")
-music_on = pygame.image.load("music-on.png")
-music_off = pygame.image.load("music-off.png")
-hit_sound = pygame.mixer.Sound("explosion.wav")
-self_hit = pygame.mixer.Sound("self_hit.wav")
-shoot_sound = pygame.mixer.Sound("shoot.wav")
-death_sound = pygame.mixer.Sound("death.wav")
+bg_image = pygame.image.load("files/bg.png")
+cursor = pygame.image.load("files/cursor.png")
+sens = pygame.image.load("files/sensitivity.png")
+music_on = pygame.image.load("files/music-on.png")
+music_off = pygame.image.load("files/music-off.png")
+hit_sound = pygame.mixer.Sound("files/explosion.wav")
+self_hit = pygame.mixer.Sound("files/self_hit.wav")
+shoot_sound = pygame.mixer.Sound("files/shoot.wav")
+death_sound = pygame.mixer.Sound("files/death.wav")
 
 # Setting fonts
-title_font = pygame.font.Font("Roboto-Thin.ttf", 100)
-button_font = pygame.font.Font("IndieFlower.ttf", 40)
-by_font = pygame.font.Font("DancingScript-Regular.ttf", 30)
-credit_font = pygame.font.Font("Walkway.ttf", 40)
-write_font = pygame.font.Font("CutiveMono-Regular.ttf", 80)
-tutorial_font = pygame.font.Font("CutiveMono-Regular.ttf", 30)
+title_font = pygame.font.Font("files/Roboto-Thin.ttf", 100)
+button_font = pygame.font.Font("files/IndieFlower.ttf", 40)
+by_font = pygame.font.Font("files/DancingScript-Regular.ttf", 30)
+credit_font = pygame.font.Font("files/Walkway.ttf", 40)
+write_font = pygame.font.Font("files/CutiveMono-Regular.ttf", 80)
+tutorial_font = pygame.font.Font("files/CutiveMono-Regular.ttf", 30)
 
 
 # classes
@@ -221,13 +221,13 @@ def draw_tutorial():
 
 
 def play_menu_music():
-    pygame.mixer.music.load("menu_music.mp3")
+    pygame.mixer.music.load("files/menu_music.mp3")
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.7)
 
 
 def play_game_music():
-    pygame.mixer.music.load("game_music.wav")
+    pygame.mixer.music.load("files/game_music.wav")
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.7)
 
