@@ -231,6 +231,10 @@ def play_game_music():
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.7)
 
+    
+def get_random_color():
+    return random.choice([RED, GREEN, BLUE, YELLOW])
+
 
 play_menu_music()
 
@@ -490,12 +494,10 @@ while True:
         health_text.draw()
         enemy_spawn_count += 1
         if enemy_spawn_count > enemy_spawn_rate:
-            enemies.append(Enemy(RED, int(enemy_spawn_rate / 3)))
+            enemies.append(Enemy(get_random_color(), int(enemy_spawn_rate / 3)))
             enemy_spawn_count = 0
         if enemy_spawn_rate > 120 - 30 * esr:
             enemy_spawn_rate -= dff
-        esr_text = Text("ESR: " + str(round(enemy_spawn_rate)), BLACK, pygame.font.Font(None, 40), w, 40)
-        esr_text.draw()
         if cooldown > 0:
             cooldown -= 1
         if music:
