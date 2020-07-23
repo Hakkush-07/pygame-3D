@@ -46,7 +46,7 @@ button_font = pygame.font.Font("files/IndieFlower.ttf", 40)
 by_font = pygame.font.Font("files/DancingScript-Regular.ttf", 30)
 credit_font = pygame.font.Font("files/Walkway.ttf", 40)
 write_font = pygame.font.Font("files/CutiveMono-Regular.ttf", 80)
-tutorial_font = pygame.font.Font("files/CutiveMono-Regular.ttf", 30)
+instructions_font = pygame.font.Font("files/CutiveMono-Regular.ttf", 30)
 
 
 # classes
@@ -203,7 +203,7 @@ segments = [(i, j, 0, i, j + 1, 0) for i in range(-grid, grid + 1) for j in rang
 
 
 # functions
-def draw_tutorial():
+def draw_instructions():
     l = ["WASD --> move",
          "Mouse or arrows --> direction",
          "Left click or SPACE --> shoot",
@@ -216,7 +216,7 @@ def draw_tutorial():
          ]
     for i in range(len(l)):
         s = l[i]
-        s_text = Text(s, YELLOW, tutorial_font, 280, 200 + i * 40)
+        s_text = Text(s, YELLOW, instructions_font, 280, 200 + i * 40)
         s_text.draw()
 
 
@@ -293,9 +293,9 @@ while True:
         s.fill(BLACK)
         WINDOW.blit(s, (10, 180))
         if 10 < pygame.mouse.get_pos()[0] < 570 and 180 < pygame.mouse.get_pos()[1] < 540:
-            draw_tutorial()
+            draw_instructions()
         else:
-            s_text = Text("Tutorial", YELLOW, write_font, 290, 360)
+            s_text = Text("Instructions", YELLOW, write_font, 290, 360)
             s_text.draw()
         pygame.display.update()
     if game_page:
