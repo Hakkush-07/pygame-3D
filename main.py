@@ -66,6 +66,22 @@ instruction = ["WASD --> move",
 
 
 class Text:
+    """
+    A class used to represent texts on screen
+
+    Attributes
+    ----------
+    text : text string
+    color : color of the text
+    font : font of the text
+    centerx : x of text center
+    centery : y of text center
+
+    Methods
+    -------
+    draw()
+        Draws the button on screen
+    """
     def __init__(self, text, color, font, centerx, centery):
         """
         Parameters
