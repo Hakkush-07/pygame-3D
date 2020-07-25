@@ -35,10 +35,16 @@ cursor = pygame.image.load("files/cursor.png")
 sens = pygame.image.load("files/sensitivity.png")
 music_on = pygame.image.load("files/music-on.png")
 music_off = pygame.image.load("files/music-off.png")
+ball_gray = pygame.image.load("files/ball-gray.png")
+ball_darkgray = pygame.image.load("files/ball-darkgray.png")
 hit_sound = pygame.mixer.Sound("files/explosion.wav")
 self_hit = pygame.mixer.Sound("files/self_hit.wav")
 shoot_sound = pygame.mixer.Sound("files/shoot.wav")
 death_sound = pygame.mixer.Sound("files/death.wav")
+hit_sound.set_volume(0.3)
+self_hit.set_volume(1.0)
+shoot_sound.set_volume(0.8)
+death_sound.set_volume(0.8)
 
 # Setting fonts
 title_font = pygame.font.Font("files/Roboto-Thin.ttf", 100)
@@ -189,6 +195,7 @@ class Ball:
     fy : finishing point y
     fz : finishing point z
     ball_type : shows who shoots the ball
+    ball_texture : texture pic of the ball
 
     Methods
     -------
@@ -197,7 +204,7 @@ class Ball:
     distance()
         Returns squared distance of the ball to player
     """
-    def __init__(self, sx, sy, sz, fx, fy, fz, ball_type):
+    def __init__(self, sx, sy, sz, fx, fy, fz, ball_type, ball_texture):
         """
         Parameters
         ----------
@@ -208,11 +215,13 @@ class Ball:
         fy : finishing point y
         fz : finishing point z
         ball_type : shows who shoots the ball
+        ball_texture : texture pic of the ball
         """
         self.sx, self.sy, self.sz, self.fx, self.fy, self.fz = sx, sy, sz, fx, fy, fz
         self.a = 0
         self.cx, self.cy, self.cz = self.sx, self.sy, self.sz
         self.ball_type = ball_type
+        self.ball_texture = ball_texture
 
     def increase(self):
         self.a += 0.01
@@ -222,9 +231,10 @@ class Ball:
         self.cx, self.cy, self.cz = self.sx + self.a * (self.fx - self.sx), self.sy + self.a * (self.fy - self.sy), self.sz + self.a * (self.fz - self.sz)
         control = get_point_coordinate(dxy, dz, posx, posy, posz, self.cx, self.cy, self.cz, fovd, w, h)
         distance = sqrt((posx - self.cx)**2 + (posy - self.cy)**2 + (posz - self.cz)**2)
-        r = min(15/(distance + 0.001) + 5, 20)
+        r = int(min(40 / (distance + 0.001), 100))
         if control:
-            pygame.draw.circle(WINDOW, BLACK, control, int(r))
+            transformed_ball = pygame.transform.scale(self.ball_texture, (2 * r, 2 * r))
+            WINDOW.blit(transformed_ball, (control[0] - r, control[1] - r))
 
     def distance(self):
         """Returns squared distance of the ball to player."""
@@ -293,7 +303,7 @@ class Enemy:
         """Creates a Ball from the enemy towards player."""
         if music:
             shoot_sound.play()
-        return Ball(self.x, self.y, self.z, posx, posy, posz, "enemy")
+        return Ball(self.x, self.y, self.z, posx, posy, posz, "enemy", ball_darkgray)
 
     def collision_check(self, bx, by, bz, ball_type):
         """Checks if the enemy is hit by player."""
@@ -430,7 +440,7 @@ def player_shoot():
         shoot_sound.play()
     ball_list.append(
         Ball(posx, posy, posz, posx + cos(dxy) * 5, posy + sin(dxy) * 5, posz + tan(dz) * 5,
-             "player"))
+             "player", ball_gray))
     cooldown = cooldown_time
 
 
