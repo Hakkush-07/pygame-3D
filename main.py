@@ -86,7 +86,7 @@ class Text:
     Methods
     -------
     draw()
-        Draws the button on screen
+        Draws the text on screen
     """
     def __init__(self, text, color, font, centerx, centery):
         """
@@ -219,16 +219,19 @@ class Ball:
         """
         self.sx, self.sy, self.sz, self.fx, self.fy, self.fz = sx, sy, sz, fx, fy, fz
         self.a = 0
-        self.cx, self.cy, self.cz = self.sx, self.sy, self.sz
         self.ball_type = ball_type
         self.ball_texture = ball_texture
+        self.cx, self.cy, self.cz = self.sx, self.sy, self.sz
+        self.mx, self.my, self.mz = self.fx - self.sx, self.fy - self.sy, self.fz - self.sz
+        self.d = sqrt(self.mx**2 + self.my**2 + self.mz**2)
 
     def increase(self):
-        self.a += 0.01
+        """Ball speed."""
+        self.a += 0.05
 
     def draw(self):
         """Draws the ball on screen with current position."""
-        self.cx, self.cy, self.cz = self.sx + self.a * (self.fx - self.sx), self.sy + self.a * (self.fy - self.sy), self.sz + self.a * (self.fz - self.sz)
+        self.cx, self.cy, self.cz = self.sx + self.a * (self.mx / self.d), self.sy + self.a * (self.my / self.d), self.sz + self.a * (self.mz / self.d)
         control = get_point_coordinate(dxy, dz, posx, posy, posz, self.cx, self.cy, self.cz, fovd, w, h)
         distance = sqrt((posx - self.cx)**2 + (posy - self.cy)**2 + (posz - self.cz)**2)
         r = int(min(40 / (distance + 0.001), 100))
@@ -256,6 +259,8 @@ class Enemy:
         Draws the enemy on screen
     shoot()
         Creates a Ball object from enemy towards player
+    shoot_smart()
+        Creates a Ball from the enemy towards the possible position of player after 1 second
     collision_check(bx, by, bz, ball_type)
         Checks if the enemy is hit by the player
     distance()
@@ -304,6 +309,13 @@ class Enemy:
         if music:
             shoot_sound.play()
         return Ball(self.x, self.y, self.z, posx, posy, posz, "enemy", ball_darkgray)
+
+    def shoot_smart(self, position_holder):
+        """Creates a Ball from the enemy towards the possible position of player after 1 second."""
+        old_position = position_holder[0]
+        if music:
+            shoot_sound.play()
+        return Ball(self.x, self.y, self.z, 2 * posx - old_position[0], 2 * posy - old_position[1], 2 * posz - old_position[2], "enemy", ball_darkgray)
 
     def collision_check(self, bx, by, bz, ball_type):
         """Checks if the enemy is hit by player."""
@@ -487,7 +499,7 @@ def movement(speed):
 
 
 def direction():
-    """Changes direction of player."""
+    """Changes direction of player (for arrow control)."""
     global dxy_increasing, dxy_decreasing, dz_increasing, dz_decreasing, dxy, dz
     if dxy_increasing:
         dxy += ds
@@ -501,21 +513,21 @@ def direction():
 
 def f():
     """Returns objects to draw on screen and balls to remove."""
-    global score, health, player_hit
+    global score, health, player_hit, ball_range, position_holder
     objects_to_draw = []
     balls_to_remove = []
     for enemy in enemies:
         objects_to_draw.append(enemy)
         enemy.sr += 1
         if enemy.sr == enemy.shoot_rate:
-            ball_list.append(enemy.shoot())
+            ball_list.append(enemy.shoot_smart(position_holder))
             enemy.sr = 0
 
     for i in range(len(ball_list)):
         ball = ball_list[i]
         objects_to_draw.append(ball)
         ball.increase()
-        if ball.a > 2:
+        if ball.a > ball_range:
             balls_to_remove.append(i)
         for enemy in enemies:
             if enemy.collision_check(ball.cx, ball.cy, ball.cz, ball.ball_type):
@@ -576,7 +588,7 @@ def main():
         moving_forward, moving_left, moving_back, moving_right, dxy_increasing, dxy_decreasing, dz_increasing, dz_decreasing, \
         sprinting, fov_increase, fov_decrease, ball_list, player_hit_animation, player_hit, anim, health, death_screen, \
         score, enemy_spawn_rate, enemy_spawn_count, enemies, difficulty, cooldown, cooldown_time, music, pause_first, \
-        old_mouse_pos, fix_dxy, fix_dz, sensitivity, objects_to_draw
+        old_mouse_pos, fix_dxy, fix_dz, sensitivity, objects_to_draw, sensitivity, ball_range, position_holder
     main_page, game_page, win_page, pause_page = True, False, False, False
     dxy, dz, posx, posy, posz, fovd = 0, 0, 0, 0, 1, 350
     ds, ms, sprs = 0.01, 0.02, 0.04
@@ -596,6 +608,8 @@ def main():
     pause_first = True
     old_mouse_pos, fix_dxy, fix_dz = (w, h), dxy, dz
     sensitivity = 2.0
+    ball_range = 7
+    position_holder = []
 
     play_menu_music()
     while True:
@@ -737,6 +751,11 @@ def main():
             enemy_spawn_control(esr, dff)
             if cooldown > 0:
                 cooldown -= 1
+            if len(position_holder) < 60:
+                position_holder.append((posx, posy, posz))
+            else:
+                position_holder.pop(0)
+                position_holder.append((posx, posy, posz))
             pygame.display.update()
         if win_page:
             pygame.mouse.set_visible(True)
@@ -752,7 +771,7 @@ def main():
                         play_menu_music()
                         main_page, game_page, win_page, pause_page = True, False, False, False
                         dxy, dz, posx, posy, posz, fovd = 0, 0, 0, 0, 1, 350
-                        ds, ms, sprs = 0.01, 0.02, 0.04
+                        ds, ms, sprs = 0.02, 0.03, 0.05
                         moving_forward, moving_left, moving_back, moving_right = False, False, False, False
                         dxy_increasing, dxy_decreasing, dz_increasing, dz_decreasing = False, False, False, False
                         sprinting, fov_increase, fov_decrease = False, False, False
@@ -769,6 +788,8 @@ def main():
                         pause_first = True
                         old_mouse_pos, fix_dxy, fix_dz = (w, h), dxy, dz
                         objects_to_draw = []
+                        ball_range = 7
+                        position_holder = []
             WINDOW.fill(RED)
             draw_win([menu_button])
             pygame.display.update()
@@ -818,6 +839,8 @@ def main():
                             pause_first = True
                             old_mouse_pos, fix_dxy, fix_dz = (w, h), dxy, dz
                             objects_to_draw = []
+                            ball_range = 7
+                            position_holder = []
                         elif exit_button.over():
                             terminate()
             resume_button.draw()
