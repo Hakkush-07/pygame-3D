@@ -92,36 +92,31 @@ class Camera:
         if self.near < relative.item(2, 0) < self.far:
             return self.perspective(relative)
 
-    def line_clipping(self, relative_1, relative_2):
+    def render_line(self, relative_1, relative_2):
         a, b = relative_1.item(2, 0), relative_2.item(2, 0)
         if a < self.near:
             if b < self.near:
-                return
-            elif b > self.far:
-                return self.perspective(intersection(relative_1, relative_2, self.near)), \
-                       self.perspective(intersection(relative_1, relative_2, self.far))
+                u = None
             else:
-                return self.perspective(intersection(relative_1, relative_2, self.near)), self.perspective(relative_2)
+                u = self.perspective(intersection(relative_1, relative_2, self.near))
         elif a > self.far:
-            if b < self.near:
-                return self.perspective(intersection(relative_1, relative_2, self.near)), \
-                       self.perspective(intersection(relative_1, relative_2, self.far))
-            elif b > self.far:
-                return
+            if b > self.far:
+                u = None
             else:
-                return self.perspective(intersection(relative_1, relative_2, self.far)), self.perspective(relative_2)
+                u = self.perspective(intersection(relative_1, relative_2, self.far))
         else:
-            if b < self.near:
-                return self.perspective(intersection(relative_1, relative_2, self.near)), self.perspective(relative_1)
-            elif b > self.far:
-                return self.perspective(intersection(relative_1, relative_2, self.far)), self.perspective(relative_1)
+            u = self.perspective(relative_1)
+        if b < self.near:
+            if a < self.near:
+                v = None
             else:
-                return self.perspective(relative_1), self.perspective(relative_2)
-
-    def render_line(self, relative_1, relative_2, algorithm=False):
-        if algorithm:
-            return self.line_clipping(relative_1, relative_2)
+                v = self.perspective(intersection(relative_1, relative_2, self.near))
+        elif b > self.far:
+            if a > self.far:
+                v = None
+            else:
+                v = self.perspective(intersection(relative_1, relative_2, self.far))
         else:
-            a, b = relative_1.item(2, 0), relative_2.item(2, 0)
-            if self.near < a < self.far and self.near < b < self.far:
-                return self.perspective(relative_1), self.perspective(relative_2)
+            v = self.perspective(relative_2)
+        if not ((a < self.near and b < self.near) or (a > self.far and b > self.far)):
+            return u, v

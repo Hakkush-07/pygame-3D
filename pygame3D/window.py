@@ -1,6 +1,8 @@
 import pygame
 from pygame.locals import FULLSCREEN
 
+# construction of the window and relevant variables
+
 pygame.init()
 
 info = pygame.display.Info()
