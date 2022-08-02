@@ -1,3 +1,2 @@
-# pygame basic 3D simulation
+# pygame 3D
 
-3D simulation with pygame
